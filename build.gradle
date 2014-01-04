@@ -3,7 +3,8 @@ description = "plannow-security application"
 apply plugin: "war"
 apply plugin: "java"
 apply plugin: "jetty"
-apply plugin: "eclipse"
+//apply plugin: "tomcat"
+//apply plugin: "eclipse"
 apply plugin: "maven"
 
 sourceCompatibility = "1.6"
@@ -14,11 +15,17 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven {
+        // For access to Apache Staging (Preview) packages
+        url "https://repository.apache.org/content/groups/staging"
+
+        // All things JBoss/Hibernate
+        url "http://repository.jboss.org/nexus/content/groups/public/"
+    }
 }
 
 // This simulates Maven's "provided" scope, until it is officially supported by Gradle
 // See http://jira.codehaus.org/browse/GRADLE-784
-
 configurations {
     provided
 }
@@ -35,21 +42,21 @@ sourceSets {
 
 dependencies {
 
-    compile "org.apache.tapestry:tapestry-core:5.3.1"
+    compile "org.apache.tapestry:tapestry-core:5.3.7"
 
     // This adds automatic compression of JavaScript and CSS in production mode:
-    compile "org.apache.tapestry:tapestry-yuicompressor:5.3.1"
+    compile "org.apache.tapestry:tapestry-yuicompressor:5.3.7"
 
     // Uncomment this to add support for file uploads:
-    // compile "org.apache.tapestry:tapestry-upload:5.3.1"
+    // compile "org.apache.tapestry:tapestry-upload:5.3.7"
 
     provided "javax.servlet:servlet-api:2.5"
     
-    compile group:"org.apache.tapestry", name :"tapestry-hibernate", version:"5.3.2"
-    compile "org.apache.commons:commons-email:1.2"
-    compile group:"org.tynamo", name :"tapestry-security", version:"0.4.2"
-    compile group:"org.apache.shiro", name :"shiro-web", version:"1.2.0"
-	compile group:"org.apache.shiro", name :"shiro-core", version:"1.2.0"
+    compile group:"org.apache.tapestry", name :"tapestry-hibernate", version:"5.3.7"
+    compile "org.apache.commons:commons-email:1.3.2"
+    compile group:"org.tynamo", name :"tapestry-security", version:"0.5.1"
+    compile group:"org.apache.shiro", name :"shiro-web", version:"1.2.2"
+	compile group:"org.apache.shiro", name :"shiro-core", version:"1.2.2"
 }
 
 test {
@@ -67,4 +74,58 @@ test {
     enableAssertions = true
 }
 
-// TODO: Configure execution mode for jettyRun task
+// https://github.com/bmuschko/gradle-tomcat-plugin
+/*tomcatRun {
+    httpPort = 8090
+    httpsPort = 8091
+    enableSSL = true
+    //configFile = file('context.xml')
+} */
+
+// http://stackoverflow.com/questions/17999062/sending-an-environment-variable-to-jetty-using-jettyrun-in-gradle
+jettyRun {
+    //systemProperties["tapestry.execution-mode"] = "development"
+    doFirst {
+        System.setProperty("tapestry.service-reloading-enabled", "false")
+        httpPort = 8081
+        scanTargets = (fileTree("src/main/").include("webapp/WEB-INF/**") + fileTree(compileJava.destinationDir)).files
+        reload = 'manual'
+        //webDefaultXml = file('src/main/config/webdefault.xml')
+    }
+    doLast {
+        jettyStop.stopPort = 8091 // Port for stop signal
+        jettyStop.stopKey = 'stopKey'
+        jettyStop.execute()
+    }
+}
+
+//task integrationTest(type: Test) {
+//    include '**/*IntegrationTest*'
+/*    doFirst {
+        jettyRun.contextPath = '/';
+        jettyRun.httpPort = 8080 // Port for test
+        jettyRun.daemon = true
+        jettyRun.execute()
+    }
+    doLast {
+        jettyStop.stopPort = 8091 // Port for stop signal
+        jettyStop.stopKey = 'stopKey'
+        jettyStop.execute()
+    }
+}
+//jetty conf
+httpPort = 8000
+stopPort = 8989
+stopKey = 'stopMe'
+
+// http://forums.gradle.org/gradle/topics/jettyrun_task_jvm_args_to_enable_remote_debugging
+test.doFirst {
+    [jettyRun, jettyRunWar]*.daemon = true
+    tasks.jettyRun.execute()
+}
+
+test.doLast {
+    jettyStop.stopPort = 8080
+    jettyStop.stopKey = 'stopKey'
+    tasks.jettyStop.execute()
+}    */
