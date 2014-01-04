@@ -1,0 +1,432 @@
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.plannow</groupId>
+    <artifactId>plannow-security</artifactId>
+    <version>1.0</version>
+    <packaging>war</packaging>
+    <name>Plannow Security. An implementation used in internal projects.</name>
+
+    <!--
+ mvn install
+ mvn -DskipTests=true install
+ mvn -DskipTests=true deploy
+ mvn -DskipTests=true verify
+ mvn -DskipTests=true prepare-package war:exploded
+ mvn dependency:tree
+ mvn versions:display-dependency-updates
+ mvn help:describe -Dplugin=exec -Ddetail=true
+ mvn -DskipTests=true clean install jetty:run
+
+ Downloaded: http://repo1.maven.org/maven2/velocity/velocity/1.4/velocity-1.4.jar (353 KB at 230.8 KB/sec)
+[INFO] com.plannow:plannow-security:war:1.0
+[INFO] +- org.apache.commons:commons-email:jar:1.3.2:compile
+[INFO] |  +- javax.mail:mail:jar:1.4.5:compile
+[INFO] |  \- javax.activation:activation:jar:1.1.1:compile
+[INFO] +- org.apache.tapestry:tapestry-core:jar:5.3.7:compile
+[INFO] |  +- org.antlr:antlr-runtime:jar:3.3:compile
+[INFO] |  |  \- org.antlr:stringtemplate:jar:3.2.1:compile
+[INFO] |  |     \- antlr:antlr:jar:2.7.6:compile
+[INFO] |  +- commons-codec:commons-codec:jar:1.5:compile
+[INFO] |  +- org.apache.tapestry:tapestry-json:jar:5.3.7:compile
+[INFO] |  \- org.apache.tapestry:tapestry-ioc:jar:5.3.7:compile
+[INFO] |     +- org.apache.tapestry:tapestry5-annotations:jar:5.3.7:compile
+[INFO] |     +- org.slf4j:slf4j-log4j12:jar:1.6.1:compile
+[INFO] |     +- org.apache.tapestry:tapestry-func:jar:5.3.7:compile
+[INFO] |     +- javax.inject:javax.inject:jar:1:compile
+[INFO] |     +- org.apache.tapestry:plastic:jar:5.3.7:compile
+[INFO] |     +- log4j:log4j:jar:1.2.14:compile
+[INFO] |     \- javassist:javassist:jar:3.12.1.GA:compile
+[INFO] +- org.apache.tapestry:tapestry-hibernate:jar:5.3.7:compile
+[INFO] |  \- org.apache.tapestry:tapestry-hibernate-core:jar:5.3.7:compile
+[INFO] |     +- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.0.Final:compile
+[INFO] |     +- org.hibernate:hibernate-core:jar:3.6.0.Final:compile
+[INFO] |     |  +- commons-collections:commons-collections:jar:3.1:compile
+[INFO] |     |  +- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |     |  \- javax.transaction:jta:jar:1.1:compile
+[INFO] |     +- geronimo-spec:geronimo-spec-jta:jar:1.0-M1:runtime
+[INFO] |     \- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:compile
+[INFO] +- org.apache.tapestry:tapestry-yuicompressor:jar:5.3.7:compile
+[INFO] |  \- com.yahoo.platform.yui:yuicompressor:jar:2.4.7:compile
+[INFO] |     \- rhino:js:jar:1.6R7:compile
+[INFO] +- org.tynamo:tapestry-security:jar:0.5.1:compile
+[INFO] |  +- org.apache.shiro:shiro-web:jar:1.2.0:compile
+[INFO] |  +- org.tynamo:tynamo-common:jar:0.0.3:compile
+[INFO] |  \- org.tynamo:tapestry-exceptionpage:jar:0.1.2:compile
+[INFO] +- org.apache.shiro:shiro-core:jar:1.2.2:compile
+[INFO] |  \- commons-beanutils:commons-beanutils:jar:1.8.3:compile
+[INFO] +- com.h2database:h2:jar:1.3.174:compile
+[INFO] \- javax.servlet:servlet-api:jar:2.5:provided
+  -->
+
+    <dependencies>
+        <!--
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.0.13</version>
+        </dependency> -->
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-email</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tapestry</groupId>
+            <artifactId>tapestry-core</artifactId>
+            <version>${tapestry.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tapestry</groupId>
+            <artifactId>tapestry-hibernate</artifactId>
+            <version>${tapestry.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>3.4.0.GA</version>
+        </dependency>
+      <!--
+        <dependency>
+            <groupId>org.apache.tapestry</groupId>
+            <artifactId>tapestry-jpa</artifactId>
+            <version>${tapestry.version}</version>
+        </dependency>
+       -->
+<!-- Adds automatic compression of JavaScript and CSS in production mode -->
+        <dependency>
+            <groupId>org.apache.tapestry</groupId>
+            <artifactId>tapestry-yuicompressor</artifactId>
+            <version>${tapestry.version}</version>
+        </dependency>
+      <!--
+        // Uncomment this to add support for file uploads:
+        // compile "org.apache.tapestry:tapestry-upload:5.3.7"
+          -->
+
+        <!-- http://tynamo.org/tapestry-security+guide -->
+        <dependency>
+            <groupId>org.tynamo</groupId>
+            <artifactId>tapestry-security</artifactId>
+            <version>0.5.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.3.174</version>
+        </dependency>
+
+        <!-- Provided by the servlet container, but sometimes referenced in the application code.
+       http://www.eclipse.org/jetty/about.php#Versions
+       -->
+        <!-- javax.servlet.UnavailableException: org.apache.tapestry5.TapestryFilter
+          java.lang.ClassCastException: org.apache.tapestry5.TapestryFilter cannot be cast to javax.servlet.Filter
+         -->
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
+            <scope>provided</scope>
+        </dependency>  -->
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>ejb3-persistence</artifactId>
+            <version>3.3.2.Beta1</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <finalName>PlannowSecurity</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <optimize>false</optimize>
+                    <compilerArgument>-Xlint:unchecked</compilerArgument>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.4</version>
+            </plugin>
+
+            <!-- Run the application using "mvn jetty:run"
+               and browse: https://localhost:8443/tynamo-test-webapp/
+
+               Java 1.7 is required, if not it fails:
+
+               http://stackoverflow.com/questions/15567514/unsupported-major-minor-version-51-0-but-everything-is-set-to-jdk-1-6
+
+               Caused by: java.lang.UnsupportedClassVersionError:
+               org/eclipse/jetty/maven/plugin/JettyRunMojo : Unsupported major.minor version 51.0
+
+                http://code.google.com/p/googleappengine/issues/detail?id=6768
+            -->
+            <!-- <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>9.0.7.v20131107</version>
+                <configuration>
+                    <reload>automatic</reload>
+                    <scanIntervalSeconds>4</scanIntervalSeconds>
+                    <stopPort>9999</stopPort>
+                    <stopKey>key</stopKey> -->
+                    <!--
+                     http://git.eclipse.org/c/jetty/org.eclipse.jetty.project.git/tree/jetty-server/src/main/config/etc/
+                     http://git.eclipse.org/c/jetty/org.eclipse.jetty.project.git/tree/examples/embedded/src/main/java/org/eclipse/jetty/embedded/LikeJettyXml.java
+                     -->
+                  <!--  <jettyXml>src/main/jetty/jetty.xml,src/main/jetty/jetty-http.xml,src/main/jetty/jetty-ssl.xml,src/main/jetty/jetty-https.xml</jettyXml>
+                </configuration>
+            </plugin>  -->
+
+        <plugin>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-maven-plugin</artifactId>
+            <version>9.1.0.v20131115</version>
+            <configuration>
+                <reload>automatic</reload>
+                <scanIntervalSeconds>4</scanIntervalSeconds>
+                <stopPort>9999</stopPort>
+                <stopKey>key</stopKey>
+                <!--
+                 http://git.eclipse.org/c/jetty/org.eclipse.jetty.project.git/tree/jetty-server/src/main/config/etc/
+                 http://git.eclipse.org/c/jetty/org.eclipse.jetty.project.git/tree/examples/embedded/src/main/java/org/eclipse/jetty/embedded/LikeJettyXml.java
+                 -->
+                <jettyXml>src/main/jetty/jetty.xml,src/main/jetty/jetty-http.xml,src/main/jetty/jetty-ssl.xml,src/main/jetty/jetty-https.xml</jettyXml>
+              </configuration>
+          </plugin>
+
+            <!-- http://wiki.eclipse.org/Jetty/Howto/Configure_SSL -->
+           <!-- <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>8.1.14.v20131031</version>
+                <configuration>
+                    <reload>automatic</reload>
+                    <scanIntervalSeconds>4</scanIntervalSeconds>
+                    <stopPort>9098</stopPort>
+                    <stopKey>key</stopKey>
+                    <jettyXml>src/main/jetty8/server-conf.xml</jettyXml>
+              <systemProperties>
+                  <systemProperty>
+                      <name>tapestry.execution-mode</name>
+                      <value>development</value>
+                  </systemProperty>
+              </systemProperties>
+          </configuration>
+      </plugin>      -->
+
+         <!--
+      <plugin>
+          <groupId>org.mortbay.jetty</groupId>
+          <artifactId>maven-jetty-plugin</artifactId>
+          <version>6.1.26</version>
+          <configuration>
+              <contextPath>/tynamo-test-webapp</contextPath>
+              <scanIntervalSeconds>5</scanIntervalSeconds>
+              <connectors>
+                  <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+                      <port>8080</port>
+                      <maxIdleTime>60000</maxIdleTime>
+                  </connector>
+                  <connector implementation="org.mortbay.jetty.security.SslSocketConnector">
+                      <port>8443</port>
+                      <maxIdleTime>60000</maxIdleTime>  -->
+                            <!-- <keystore>${project.build.directory}/jetty-ssl.keystore</keystore> -->
+                          <!--  <keystore>${basedir}/src/main/webapp/WEB-INF/jetty-ssl.keystore</keystore>
+                            <password>jetty66</password>
+                            <keyPassword>jetty66</keyPassword>
+                        </connector>
+                    </connectors>   -->
+                    <!-- <userRealms>
+                         <userRealm implementation="org.mortbay.jetty.security.HashUserRealm">
+                             <name>APP</name>
+                             <config>${project.build.directory}/webapp/WEB-INF/realm.properties</config>
+                         </userRealm>
+                     </userRealms>   -->
+                    <!--
+                    <loginServices>
+                        <loginService implementation="org.eclipse.jetty.security.HashLoginService">
+                            <name>APP</name>
+                            <config>${project.build.directory}/test-classes/jetty-users.properties</config>
+                        </loginService>
+                    </loginServices>
+                    -->
+              <!--  </configuration>
+            </plugin>  -->
+
+            <!-- tomcat6:run
+               http://tomcat.apache.org/maven-plugin-2.1/tomcat6-maven-plugin/
+               -->
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat6-maven-plugin</artifactId>
+                <version>2.1</version>   <!-- 2.1 - 20 February 2013 - 6.0.35 -->
+                <!-- 2.2-SNAPSHOT : 6.0.37 - tomcat6-maven-plugin-2.2-20130706.134723-11 -->
+                <configuration>
+                    <!-- application path always starts with /-->
+                    <path>/</path>
+                    <pluginArtifacts></pluginArtifacts>
+                    <additionalConfigFilesDir>${basedir}/src/main/tomcat/conf</additionalConfigFilesDir>
+                    <contextReloadable>true</contextReloadable>
+                    <backgroundProcessorDelay>5</backgroundProcessorDelay>
+                    <port>8080</port>
+                    <httpsPort>8443</httpsPort>
+                    <keystoreFile>${basedir}/jetty-ssl.keystore</keystoreFile>
+                    <password>jetty88</password>
+                    <keystorePass>jetty88</keystorePass>
+                    <!-- <keystoreType></keystoreType> -->
+                </configuration>
+            </plugin>
+
+            <!-- tomcat7:run
+               http://tomcat.apache.org/maven-plugin-2.1/tomcat7-maven-plugin/
+               -->
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <systemProperties>
+                        <tapestry.service-reloading-enabled>false</tapestry.service-reloading-enabled>
+                        <tapestry.execution-mode>development</tapestry.execution-mode>
+                    </systemProperties>
+                    <!-- application path always starts with /-->
+                    <path>/</path>
+                    <pluginArtifacts></pluginArtifacts>
+                    <!-- <additionalConfigFilesDir>${basedir}/src/main/tomcat/conf</additionalConfigFilesDir>  -->
+                    <contextReloadable>true</contextReloadable>
+                    <backgroundProcessorDelay>5</backgroundProcessorDelay>
+                    <port>8088</port>
+                    <httpsPort>8443</httpsPort>
+                    <keystoreFile>${basedir}/jetty-ssl.keystore</keystoreFile>
+                    <password>jetty88</password>
+                    <keystorePass>jetty88</keystorePass>
+                    <!-- <keystoreType></keystoreType> -->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <reporting/>
+
+    <!--
+    http://active-active.blogspot.be/2011/04/maven-note-securing-temporary-jetty.html
+    http://stackoverflow.com/questions/3794892/howto-use-https-ssl-with-maven-mortbay-jetty-plugin
+    http://www.eclipse.org/jetty/documentation/current/configuring-ssl.html#generating-key-pairs-and-certificates
+    -->
+    <profiles>
+        <profile>
+            <id>keytool</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>keytool-maven-plugin</artifactId>
+                        <version>1.2</version> <!-- 1.4 -->
+                        <executions>
+                            <execution>
+                                <phase>generate-resources</phase>
+                                <id>clean</id>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <phase>generate-resources</phase>
+                                <id>genkey</id>
+                                <goals>
+                                    <goal>generateKeyPair</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <!-- <keystore>${project.build.directory}/webapp/WEB-INF/jetty-ssl.keystore</keystore>  -->
+                            <keystore>${basedir}/jetty-ssl.keystore</keystore>
+                            <!-- <keystore>${basedir}/src/main/webapp/WEB-INF/jetty-ssl.keystore</keystore> --><!-- jetty9 -->
+                            <dname>cn=localhost</dname><!-- put your CN here-->
+                            <!-- <dname>cn=myserverhostname.mydomain.tld</dname> --><!-- put your CN here-->
+                            <keypass>jetty88</keypass>
+                            <storepass>jetty88</storepass>
+                            <alias>jetty88</alias>
+                            <keyalg>RSA</keyalg>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- jpa2ddl
+          http://stackoverflow.com/questions/9276808/unable-to-generate-hbm2ddl-using-hibernate3-maven-plugin-3-0
+          https://forum.hibernate.org/viewtopic.php?f=6&t=967039
+          http://users.mafr.de/~matthias/articles/generating-ddl-scripts.html
+          http://mojo.codehaus.org/hibernate3-maven-plugin/index.html
+
+          mvn hibernate3:hbm2ddl
+
+          hibernate3:hbm2ddl -P jpa2ddl -X
+         -->
+        <profile>
+            <id>jpa2ddl</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <!-- run "mvn hibernate3:hbm2ddl" to generate a schema -->
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>hibernate3-maven-plugin</artifactId>
+                        <version>3.0</version>
+                        <configuration>
+                            <hibernatetool>
+                                <jpaconfiguration persistenceunit="p1" />
+                                <hbm2ddl export="false" create="true"
+                                         update="true" format="true" outputfilename="schema.sql" />
+                            </hibernatetool>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <repositories>
+        <!-- This repository is only needed when the Tapestry version is a preview release, rather
+             than a final release. -->
+       <repository>
+            <id>apache-staging</id>
+            <url>https://repository.apache.org/content/groups/staging</url>
+        </repository>
+    </repositories>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.6</java.version>
+        <!-- http://maven.apache.org/plugins/maven-resources-plugin/examples/binaries-filtering.html -->
+         <tapestry.version>5.3.7</tapestry.version> <!-- 5.4-beta-2 -->
+    </properties>
+</project>
