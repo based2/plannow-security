@@ -13,7 +13,7 @@ import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.cache.MemoryConstrainedCacheManager;
-import org.apache.shiro.crypto.hash.Sha1Hash;
+import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.SimpleByteSource;
@@ -31,7 +31,7 @@ public class UserAuthorizingRealm extends AuthorizingRealm
 		this.userService = userService;
 		setName("users_realm");
 		setAuthenticationTokenClass(UsernamePasswordToken.class);
-		setCredentialsMatcher(new HashedCredentialsMatcher(Sha1Hash.ALGORITHM_NAME));
+		setCredentialsMatcher(new HashedCredentialsMatcher(Sha256Hash.ALGORITHM_NAME));
 	}
 
 	@Override
